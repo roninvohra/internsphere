@@ -2,6 +2,8 @@ import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
 import React, { useState } from 'react';
 import NavBar from "./NavBar";
 import { useNavigate } from 'react-router-dom'; 
+import logo from '../logo.png'
+
 export default function Login() {
   const [username, setUsername] = useState ('');
   const [password, setPassword] = useState ('');
@@ -44,7 +46,15 @@ export default function Login() {
             <Card className="shadow px-4">
               <Card.Body>
                 <div className="mb-3 mt-md-4">
-                  <h2 className="fw-bold mb-2 text-center text-uppercase ">INTERNSPHERE</h2>
+                  <div align = "center">
+                  <img
+            src={logo}
+            alt="Logo"
+            width = "300"
+             // Adjust the height as needed
+            className="d-inline-block align-top"
+          />
+                  </div>
                   <div className="mb-3">
                     <Form onSubmit={handleLogin}>
                       <Form.Group className="mb-3" controlId="Name">

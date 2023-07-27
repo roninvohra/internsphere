@@ -3,12 +3,23 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import logo from '../logo.png'
 
 function NavBar() {
   return (
     <Navbar fixed="top" expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="/">internsphere</Navbar.Brand>
+      <Navbar.Brand href="/">
+        
+          <img
+            src={logo}
+            alt="Logo"
+            width = "33" // Adjust the height as needed
+            className="d-inline-block align-top"
+            />
+        
+          
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
