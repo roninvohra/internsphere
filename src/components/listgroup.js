@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Container from 'react-bootstrap/Container';
+import './dropdown.css';
+import StatusCounter from './StatusCounter';
 
 function ListGroup() {
   const [data, setData] = useState([]);
@@ -19,7 +21,7 @@ function ListGroup() {
         // Initialize the statusMap with the status from the data
         const initialStatusMap = {};
         data.forEach(item => {
-          initialStatusMap[item.id] = item.status || "Status"; // Assuming the status field contains string values (e.g., "Applied", "Received Assessment", etc.)
+          initialStatusMap[item.id] = item.status || "Not Applied"; // Assuming the status field contains string values (e.g., "Applied", "Received Assessment", etc.)
         });
         setStatusMap(initialStatusMap);
       })
@@ -83,8 +85,8 @@ function ListGroup() {
 
   const sortedData = filteredData.sort((a, b) => {
     // Sort first by status, then by ID
-    const statusA = statusMap[a.id] || "Status";
-    const statusB = statusMap[b.id] || "Status";
+    const statusA = statusMap[a.id] || "Not Applied";
+    const statusB = statusMap[b.id] || "Not Applied";
 
     if (statusA === statusB) {
       return sortOrder === "asc" ? a.id - b.id : b.id - a.id; // If statuses are the same, sort by ID
@@ -98,12 +100,17 @@ function ListGroup() {
   return (
     <>
       <Container>
+      <div align = "center" style = {{marginTop: "20px"}}>
+      <StatusCounter data={data} statusMap={statusMap} />
+      </div>
       <Form.Group>
           <Form.Control
             type="text"
             placeholder="Search by company, location, or program..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            style = {{marginTop:"20px", marginBottom:"10px"}}
+            
           />
         </Form.Group>
       <Table striped bordered>
@@ -126,15 +133,33 @@ function ListGroup() {
         {filteredData.map(item =>
               <tr key={item.id}>
                 <td>
-                  <DropdownButton id={`dropdown-button-${item.id}`} title={statusMap[item.id] || "Status"}>
-                    <Dropdown.Item eventKey="applied" onClick={() => handleDropdownItemClick("Applied", item.id)}>
+                  <DropdownButton style ={{color: "red"}} className = {'button ${statusMap[item.id] || "Not Applied"}'} id={`dropdown-button-${item.id}`} title={statusMap[item.id] || "Not Applied"}>
+                    <Dropdown.Item  eventKey="applied" onClick={() => handleDropdownItemClick("Applied", item.id)}>
                       Applied
+                    </Dropdown.Item>
+                    <Dropdown.Item  eventKey="no_response" onClick={() => handleDropdownItemClick("No Response", item.id)}>
+                      No Response
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey="rejected" onClick={() => handleDropdownItemClick("Rejected", item.id)}>
+                      Rejected
                     </Dropdown.Item>
                     <Dropdown.Item eventKey="received_assessment" onClick={() => handleDropdownItemClick("Received Assessment", item.id)}>
                       Received Assessment
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="got_interview" onClick={() => handleDropdownItemClick("Got Interview", item.id)}>
-                      Got Interview
+                    <Dropdown.Item eventKey="assessment_complete" onClick={() => handleDropdownItemClick("Assessment Complete", item.id)}>
+                    Assessment Complete
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey="interview_pending" onClick={() => handleDropdownItemClick("Interview Pending", item.id)}>
+                    Interview Pending
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey="interview_complete" onClick={() => handleDropdownItemClick("Interview Complete", item.id)}>
+                    Interview Complete
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey="received_offer" onClick={() => handleDropdownItemClick("Received Offer", item.id)}>
+                    Received Offer
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey="accepted_offer" onClick={() => handleDropdownItemClick("Accepted Offer", item.id)}>
+                    Accepted Offer
                     </Dropdown.Item>
                   </DropdownButton>
                 </td>

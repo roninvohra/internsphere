@@ -9,6 +9,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './components/Home';
 import Layout from './components/Layout';
 import SignOut from './components/SignOut';
+import Thread from './components/Thread';
+
 function App() {
   return (
     <>
@@ -19,6 +21,7 @@ function App() {
         <Route path="/signup" element={< SignUp />} />
         <Route path="/login" element={< Login />} />
         <Route path="/signout" element={< SignOut />} />
+        <Route path="/thread" element={< Thread />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
