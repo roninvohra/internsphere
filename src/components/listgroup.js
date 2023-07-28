@@ -1,26 +1,30 @@
 import { useState, useEffect } from "react";
-import Form from 'react-bootstrap/Form';
-import Table from 'react-bootstrap/Table';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Container from 'react-bootstrap/Container';
-import './dropdown.css';
-import StatusCounter from './StatusCounter';
+import Form from "react-bootstrap/Form";
+import Table from "react-bootstrap/Table";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Container from "react-bootstrap/Container";
+import "./dropdown.css";
+import StatusCounter from "./StatusCounter";
 
 function ListGroup() {
   const [data, setData] = useState([]);
   const [statusMap, setStatusMap] = useState({}); // New state to hold the status for each job id
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [sortOrder, setSortOrder] = useState("asc");
   useEffect(() => {
-    fetch('http://localhost:8082/csinternships?user_id=' + localStorage.getItem('loggedInUser'))
+    fetch(
+      process.env.REACT_APP_API_ENDPOINT +
+        "/csinternships?user_id=" +
+        localStorage.getItem("loggedInUser")
+    )
       .then((response) => response.json())
       .then((data) => {
         setData(data);
         // Initialize the statusMap with the status from the data
         const initialStatusMap = {};
-        data.forEach(item => {
+        data.forEach((item) => {
           initialStatusMap[item.id] = item.status || "Not Applied"; // Assuming the status field contains string values (e.g., "Applied", "Received Assessment", etc.)
         });
         setStatusMap(initialStatusMap);
@@ -30,52 +34,54 @@ function ListGroup() {
 
   const handleStatusHeaderClick = () => {
     // Toggle the sorting order when the "Status" header is clicked
-    setSortOrder(prevSortOrder => prevSortOrder === "asc" ? "desc" : "asc");
+    setSortOrder((prevSortOrder) => (prevSortOrder === "asc" ? "desc" : "asc"));
   };
-
 
   const handleDropdownItemClick = async (eventKey, job_id) => {
-    const user_id = localStorage.getItem('loggedInUser');
-    if (user_id){
-    try {
+    const user_id = localStorage.getItem("loggedInUser");
+    if (user_id) {
+      try {
+        const response = await fetch(
+          process.env.REACT_APP_API_ENDPOINT + "/api/statusupdate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id, job_id, status: eventKey }),
+          }
+        );
 
-      const response = await fetch('http://localhost:8082/api/statusupdate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_id, job_id, status: eventKey }),
-      });
-
-      if (response.ok) {
-        // Update the status in the local state when the API request is successful
-        setStatusMap(prevStatusMap => ({
-          ...prevStatusMap,
-          [job_id]: eventKey,
-        }));
-        console.log(`API request successful! Status updated for job id ${job_id}.`);
-      } else {
-        console.error('API request failed!');
+        if (response.ok) {
+          // Update the status in the local state when the API request is successful
+          setStatusMap((prevStatusMap) => ({
+            ...prevStatusMap,
+            [job_id]: eventKey,
+          }));
+          console.log(
+            `API request successful! Status updated for job id ${job_id}.`
+          );
+        } else {
+          console.error("API request failed!");
+          // Handle error case
+        }
+      } catch (error) {
+        console.error("API request error:", error);
         // Handle error case
       }
-    } catch (error) {
-      console.error('API request error:', error);
-      // Handle error case
+    } else {
+      setStatusMap((prevStatusMap) => ({
+        ...prevStatusMap,
+        [job_id]: eventKey,
+      }));
     }
-  }
-  else{
-    setStatusMap(prevStatusMap => ({
-      ...prevStatusMap,
-      [job_id]: eventKey,
-    }));
-  }
   };
 
-  const filteredData = data.filter(item => {
+  const filteredData = data.filter((item) => {
     const company = item.company.toLowerCase();
     const location = item.location.toLowerCase();
     const program = item.program.toLowerCase();
-    console.log (item)
+    console.log(item);
     return (
       company.includes(searchQuery.toLowerCase()) ||
       location.includes(searchQuery.toLowerCase()) ||
@@ -92,85 +98,152 @@ function ListGroup() {
       return sortOrder === "asc" ? a.id - b.id : b.id - a.id; // If statuses are the same, sort by ID
     } else {
       // Sort by status
-      return sortOrder === "asc" ? statusA.localeCompare(statusB) : statusB.localeCompare(statusA);
+      return sortOrder === "asc"
+        ? statusA.localeCompare(statusB)
+        : statusB.localeCompare(statusA);
     }
   });
 
-  
   return (
     <>
       <Container>
-      <div align = "center" style = {{marginTop: "20px"}}>
-      <StatusCounter data={data} statusMap={statusMap} />
-      </div>
-      <Form.Group>
+        <div align="center" style={{ marginTop: "20px" }}>
+          <StatusCounter data={data} statusMap={statusMap} />
+        </div>
+        <Form.Group>
           <Form.Control
             type="text"
             placeholder="Search by company, location, or program..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style = {{marginTop:"20px", marginBottom:"10px"}}
-            
+            style={{ marginTop: "20px", marginBottom: "10px" }}
           />
         </Form.Group>
-      <Table striped bordered>
-        <thead>
-          <tr>
-          <th onClick={handleStatusHeaderClick}>
-                Status{" "}
-                {sortOrder === "asc" ? "▲" : "▼"} 
+        <Table striped bordered>
+          <thead>
+            <tr>
+              <th onClick={handleStatusHeaderClick}>
+                Status {sortOrder === "asc" ? "▲" : "▼"}
               </th>
-              <th onClick={() => setSortOrder(prevSortOrder => prevSortOrder === "asc" ? "desc" : "asc")}>
+              <th
+                onClick={() =>
+                  setSortOrder((prevSortOrder) =>
+                    prevSortOrder === "asc" ? "desc" : "asc"
+                  )
+                }
+              >
                 ID
-                {sortOrder === "asc" ? "▲" : "▼"} {/* Add an arrow indicating the sorting order */}
+                {sortOrder === "asc" ? "▲" : "▼"}{" "}
+                {/* Add an arrow indicating the sorting order */}
               </th>
-            <th>Company</th>
-            <th>Location</th>
-            <th>Program</th>
-          </tr>
-        </thead>
-        <tbody>
-        {filteredData.map(item =>
+              <th>Company</th>
+              <th>Location</th>
+              <th>Program</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <DropdownButton style ={{color: "red"}} className = {'button ${statusMap[item.id] || "Not Applied"}'} id={`dropdown-button-${item.id}`} title={statusMap[item.id] || "Not Applied"}>
-                    <Dropdown.Item  eventKey="applied" onClick={() => handleDropdownItemClick("Applied", item.id)}>
+                  <DropdownButton
+                    style={{ color: "red" }}
+                    className={'button ${statusMap[item.id] || "Not Applied"}'}
+                    id={`dropdown-button-${item.id}`}
+                    title={statusMap[item.id] || "Not Applied"}
+                  >
+                    <Dropdown.Item
+                      eventKey="applied"
+                      onClick={() =>
+                        handleDropdownItemClick("Applied", item.id)
+                      }
+                    >
                       Applied
                     </Dropdown.Item>
-                    <Dropdown.Item  eventKey="no_response" onClick={() => handleDropdownItemClick("No Response", item.id)}>
+                    <Dropdown.Item
+                      eventKey="no_response"
+                      onClick={() =>
+                        handleDropdownItemClick("No Response", item.id)
+                      }
+                    >
                       No Response
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="rejected" onClick={() => handleDropdownItemClick("Rejected", item.id)}>
+                    <Dropdown.Item
+                      eventKey="rejected"
+                      onClick={() =>
+                        handleDropdownItemClick("Rejected", item.id)
+                      }
+                    >
                       Rejected
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="received_assessment" onClick={() => handleDropdownItemClick("Received Assessment", item.id)}>
+                    <Dropdown.Item
+                      eventKey="received_assessment"
+                      onClick={() =>
+                        handleDropdownItemClick("Received Assessment", item.id)
+                      }
+                    >
                       Received Assessment
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="assessment_complete" onClick={() => handleDropdownItemClick("Assessment Complete", item.id)}>
-                    Assessment Complete
+                    <Dropdown.Item
+                      eventKey="assessment_complete"
+                      onClick={() =>
+                        handleDropdownItemClick("Assessment Complete", item.id)
+                      }
+                    >
+                      Assessment Complete
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="interview_pending" onClick={() => handleDropdownItemClick("Interview Pending", item.id)}>
-                    Interview Pending
+                    <Dropdown.Item
+                      eventKey="interview_pending"
+                      onClick={() =>
+                        handleDropdownItemClick("Interview Pending", item.id)
+                      }
+                    >
+                      Interview Pending
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="interview_complete" onClick={() => handleDropdownItemClick("Interview Complete", item.id)}>
-                    Interview Complete
+                    <Dropdown.Item
+                      eventKey="interview_complete"
+                      onClick={() =>
+                        handleDropdownItemClick("Interview Complete", item.id)
+                      }
+                    >
+                      Interview Complete
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="received_offer" onClick={() => handleDropdownItemClick("Received Offer", item.id)}>
-                    Received Offer
+                    <Dropdown.Item
+                      eventKey="received_offer"
+                      onClick={() =>
+                        handleDropdownItemClick("Received Offer", item.id)
+                      }
+                    >
+                      Received Offer
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="accepted_offer" onClick={() => handleDropdownItemClick("Accepted Offer", item.id)}>
-                    Accepted Offer
+                    <Dropdown.Item
+                      eventKey="accepted_offer"
+                      onClick={() =>
+                        handleDropdownItemClick("Accepted Offer", item.id)
+                      }
+                    >
+                      Accepted Offer
                     </Dropdown.Item>
                   </DropdownButton>
                 </td>
                 <td>{item.id}</td>
                 <td>{item.company}</td>
                 <td>{item.location}</td>
-                <td>{ item.link && <a href={item.link} target="_blank" rel="noopener noreferrer">{item.program}</a>} { !item.link && item.program}</td>
+                <td>
+                  {item.link && (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.program}
+                    </a>
+                  )}{" "}
+                  {!item.link && item.program}
+                </td>
               </tr>
-            )}
-        </tbody>
-      </Table>
+            ))}
+          </tbody>
+        </Table>
       </Container>
     </>
   );

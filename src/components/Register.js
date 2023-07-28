@@ -1,27 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
 
 export default function Registration() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8082/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password, email, name }),
-      });
+      const response = await fetch(
+        process.env.REACT_APP_API_ENDPOINT + "/api/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, email, name }),
+        }
+      );
 
       if (response.status === 200) {
         // Registration successful, e.g., redirect to the login page
@@ -35,7 +38,7 @@ export default function Registration() {
     } catch (error) {
       console.log(error);
       // Handle errors, e.g., display a generic error message
-      setError('An error occurred. Please try again later.');
+      setError("An error occurred. Please try again later.");
     }
   };
 
@@ -49,13 +52,13 @@ export default function Registration() {
             <Card className="shadow px-4">
               <Card.Body>
                 <div className="mb-3 mt-md-4">
-                  <h2 className="fw-bold mb-2 text-center text-uppercase ">INTERNSPHERE</h2>
+                  <h2 className="fw-bold mb-2 text-center text-uppercase ">
+                    INTERNSPHERE
+                  </h2>
                   <div className="mb-3">
                     <Form onSubmit={handleRegister}>
                       <Form.Group className="mb-3" controlId="Name">
-                        <Form.Label className="text-center">
-                          Name
-                        </Form.Label>
+                        <Form.Label className="text-center">Name</Form.Label>
                         <Form.Control
                           type="text"
                           placeholder="Enter Name"
@@ -88,7 +91,10 @@ export default function Registration() {
                         />
                       </Form.Group>
 
-                      <Form.Group className="mb-3" controlId="formBasicPassword">
+                      <Form.Group
+                        className="mb-3"
+                        controlId="formBasicPassword"
+                      >
                         <Form.Label>Password</Form.Label>
                         <Form.Control
                           type="password"
@@ -98,7 +104,10 @@ export default function Registration() {
                         />
                       </Form.Group>
 
-                      <Form.Group className="mb-3" controlId="formBasicPassword">
+                      <Form.Group
+                        className="mb-3"
+                        controlId="formBasicPassword"
+                      >
                         <Form.Label>Confirm Password</Form.Label>
                         <Form.Control type="password" placeholder="Password" />
                       </Form.Group>
@@ -113,7 +122,7 @@ export default function Registration() {
                   {error && <p className="text-danger text-center">{error}</p>}
                   <div className="mt-3">
                     <p className="mb-0 text-center">
-                      Already have an account?{' '}
+                      Already have an account?{" "}
                       <a href="/login" className="text-primary fw-bold">
                         Sign In
                       </a>
