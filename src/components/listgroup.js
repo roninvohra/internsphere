@@ -6,9 +6,8 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Container from "react-bootstrap/Container";
 import "./dropdown.css";
 import StatusCounter from "./StatusCounter";
-import {Card, Form, Button, Alert } from 'react-bootstrap';
-
-
+import { Card, Form, Button, Alert } from "react-bootstrap";
+import statusColors from "./Utils";
 
 function ListGroup() {
   const [data, setData] = useState([]);
@@ -109,15 +108,25 @@ function ListGroup() {
   return (
     <>
       <Container>
-        <div align="center" style={{ marginTop: "20px" }}>
-          <StatusCounter data={data} statusMap={statusMap} />
-        </div>
         <div>
-          {!localStorage.getItem("loggedInUser") &&
-              <Alert variant="warning" style={{ width: '27rem', background: '#ffffe0', marginLeft: '0px', marginTop: '10px' }}>
-              <Alert.Heading>⚠️ Please <a href="/login">login</a> to save your changes.</Alert.Heading>
+          {!localStorage.getItem("loggedInUser") && (
+            <Alert
+              variant="warning"
+              style={{
+                width: "27rem",
+                background: "#ffffe0",
+                marginLeft: "0px",
+                marginTop: "10px",
+              }}
+            >
+              <Alert.Heading>
+                ⚠️ Please <a href="/login">login</a> to save your changes.
+              </Alert.Heading>
             </Alert>
-          }
+          )}
+        </div>
+        <div style={{ marginTop: "20px" }}>
+          <StatusCounter data={data} statusMap={statusMap} />
         </div>
         <Form.Group>
           <Form.Control
@@ -155,8 +164,7 @@ function ListGroup() {
               <tr key={item.id}>
                 <td>
                   <DropdownButton
-                    style={{ color: "red" }}
-                    className={'button ${statusMap[item.id] || "Not Applied"}'}
+                    variant={statusColors[statusMap[item.id]]}
                     id={`dropdown-button-${item.id}`}
                     title={statusMap[item.id] || "Not Applied"}
                   >
@@ -187,10 +195,10 @@ function ListGroup() {
                     <Dropdown.Item
                       eventKey="received_assessment"
                       onClick={() =>
-                        handleDropdownItemClick("Received Assessment", item.id)
+                        handleDropdownItemClick("Assessment Received", item.id)
                       }
                     >
-                      Received Assessment
+                      Assessment Received
                     </Dropdown.Item>
                     <Dropdown.Item
                       eventKey="assessment_complete"
@@ -219,18 +227,18 @@ function ListGroup() {
                     <Dropdown.Item
                       eventKey="received_offer"
                       onClick={() =>
-                        handleDropdownItemClick("Received Offer", item.id)
+                        handleDropdownItemClick("Offer Received ", item.id)
                       }
                     >
-                      Received Offer
+                      Offer Received
                     </Dropdown.Item>
                     <Dropdown.Item
                       eventKey="accepted_offer"
                       onClick={() =>
-                        handleDropdownItemClick("Accepted Offer", item.id)
+                        handleDropdownItemClick("Offer Accepted ", item.id)
                       }
                     >
-                      Accepted Offer
+                      Offer Accepted
                     </Dropdown.Item>
                   </DropdownButton>
                 </td>
