@@ -14,6 +14,27 @@ function ListGroup() {
   const [statusMap, setStatusMap] = useState({}); // New state to hold the status for each job id
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [sortCol, setSortCol] = useState("id");
+
+  function statusComparator(sortOrder, statusA, statusB) {
+    if (statusA === statusB) {
+      return 0;
+    }
+
+    if (statusA === "Not Applied") {
+      return sortOrder === "asc" ? -1 : 1;
+    }
+
+    if (statusB === "Not Applied") {
+      return sortOrder === "asc" ? 1 : -1;
+    }
+
+    // In case both statusA and statusB are not "Not Applied"
+    return sortOrder === "asc"
+      ? statusA.localeCompare(statusB)
+      : statusB.localeCompare(statusA);
+  }
+
   useEffect(() => {
     fetch(
       process.env.REACT_APP_API_ENDPOINT +
@@ -36,6 +57,13 @@ function ListGroup() {
   const handleStatusHeaderClick = () => {
     // Toggle the sorting order when the "Status" header is clicked
     setSortOrder((prevSortOrder) => (prevSortOrder === "asc" ? "desc" : "asc"));
+    setSortCol("status");
+  };
+
+  const handleIDHeaderClick = () => {
+    // Toggle the sorting order when the "Status" header is clicked
+    setSortOrder((prevSortOrder) => (prevSortOrder === "asc" ? "desc" : "asc"));
+    setSortCol("id");
   };
 
   const handleDropdownItemClick = async (eventKey, job_id) => {
@@ -76,13 +104,14 @@ function ListGroup() {
         [job_id]: eventKey,
       }));
     }
+    setSortCol("none");
   };
 
   const filteredData = data.filter((item) => {
     const company = item.company.toLowerCase();
     const location = item.location.toLowerCase();
     const program = item.program.toLowerCase();
-    console.log(item);
+    //console.log(item);
     return (
       company.includes(searchQuery.toLowerCase()) ||
       location.includes(searchQuery.toLowerCase()) ||
@@ -90,20 +119,22 @@ function ListGroup() {
     );
   });
 
-  const sortedData = filteredData.sort((a, b) => {
-    // Sort first by status, then by ID
-    const statusA = statusMap[a.id] || "Not Applied";
-    const statusB = statusMap[b.id] || "Not Applied";
+  console.log("sort col:", sortCol, "dir:", sortOrder);
 
-    if (statusA === statusB) {
+  if (sortCol == "id") {
+    filteredData.sort((a, b) => {
+      // Sort first by status, then by ID
+      let statusA = statusMap[a.id] || "Not Applied";
+      let statusB = statusMap[b.id] || "Not Applied";
       return sortOrder === "asc" ? a.id - b.id : b.id - a.id; // If statuses are the same, sort by ID
-    } else {
-      // Sort by status
-      return sortOrder === "asc"
-        ? statusA.localeCompare(statusB)
-        : statusB.localeCompare(statusA);
-    }
-  });
+    });
+  } else if (sortCol == "status") {
+    filteredData.sort((a, b) => {
+      let statusA = statusMap[a.id] || "Not Applied";
+      let statusB = statusMap[b.id] || "Not Applied";
+      return statusComparator(sortOrder, statusA, statusB);
+    });
+  }
 
   return (
     <>
@@ -143,16 +174,9 @@ function ListGroup() {
               <th onClick={handleStatusHeaderClick}>
                 Status {sortOrder === "asc" ? "▲" : "▼"}
               </th>
-              <th
-                onClick={() =>
-                  setSortOrder((prevSortOrder) =>
-                    prevSortOrder === "asc" ? "desc" : "asc"
-                  )
-                }
-              >
+              <th onClick={handleIDHeaderClick}>
                 ID
                 {sortOrder === "asc" ? "▲" : "▼"}{" "}
-                {/* Add an arrow indicating the sorting order */}
               </th>
               <th>Company</th>
               <th>Location</th>

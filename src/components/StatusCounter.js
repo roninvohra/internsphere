@@ -18,10 +18,10 @@ const StatusCounter = ({ data, statusMap }) => {
   const statusCounts = countStatus();
   const statusList1 = [
     "Not Applied",
+    "Applied",
     "No Response",
     "Rejected",
-    "Offer Received ",
-    //"Offer Accepted",
+    "Offer Accepted",
   ];
 
   const statusList2 = [
@@ -29,6 +29,7 @@ const StatusCounter = ({ data, statusMap }) => {
     "Assessment Complete",
     "Interview Pending",
     "Interview Complete",
+    "Offer Received ",
   ];
 
   return (
