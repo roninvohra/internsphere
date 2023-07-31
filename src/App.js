@@ -10,6 +10,7 @@ import Home from './components/Home';
 import Layout from './components/Layout';
 import SignOut from './components/SignOut';
 import Thread from './components/Thread';
+import Feedback from './components/Feedback';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/login" element={< Login />} />
         <Route path="/signout" element={< SignOut />} />
         <Route path="/thread" element={< Thread />} />
+        <Route path="/feedback" element={< Feedback />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>

@@ -26,10 +26,12 @@ function NavBar() {
           </Nav>
           {/* Push the username to the right side */}
           <Nav>
+          <Nav.Link href="/feedback">Feedback</Nav.Link>
           {!localStorage.getItem('loggedInUser') && <Nav.Link href="/signup">Sign Up</Nav.Link>}
             {!localStorage.getItem('loggedInUser') && <Nav.Link href="/login">Login</Nav.Link>}
             {localStorage.getItem('loggedInUser') && <Nav.Link href="/signout">Logout</Nav.Link>}
             {localStorage.getItem('loggedInUser') && <Nav.Link disabled>{localStorage.getItem('username')}</Nav.Link>}
+
           </Nav>
         </Navbar.Collapse>
       </Container>

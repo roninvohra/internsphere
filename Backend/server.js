@@ -176,6 +176,21 @@
     });
   });
   
+  app.post('/api/feedback', (req, res) => {
+    const { link } = req.body;
+  
+    // Insert the new job link into the feedback_posting table
+    const insertLinkQuery = 'INSERT INTO feedback_posting (link) VALUES (?)';
+    db.query(insertLinkQuery, [link], (err, data) => {
+      if (err) {
+        console.error('Error adding job link:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+  
+      return res.status(200).json({ message: 'Job link added successfully' });
+    });
+  });
+
   app.listen(8082, () => {
     console.log("listening");
   });
