@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -7,6 +6,9 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Container from "react-bootstrap/Container";
 import "./dropdown.css";
 import StatusCounter from "./StatusCounter";
+import {Card, Form, Button, Alert } from 'react-bootstrap';
+
+
 
 function ListGroup() {
   const [data, setData] = useState([]);
@@ -109,6 +111,13 @@ function ListGroup() {
       <Container>
         <div align="center" style={{ marginTop: "20px" }}>
           <StatusCounter data={data} statusMap={statusMap} />
+        </div>
+        <div>
+          {!localStorage.getItem("loggedInUser") &&
+              <Alert variant="warning" style={{ width: '27rem', background: '#ffffe0', marginLeft: '0px', marginTop: '10px' }}>
+              <Alert.Heading>⚠️ Please <a href="/login">login</a> to save your changes.</Alert.Heading>
+            </Alert>
+          }
         </div>
         <Form.Group>
           <Form.Control
