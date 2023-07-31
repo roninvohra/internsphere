@@ -9,8 +9,8 @@
   const db = mysql.createConnection({
     host: "127.0.0.1",
     port: '3306',
-    user: 'root',
-    password: 'root',
+    user: 'admin',
+    password: 'mwn2001#chd',
     database: 'jobs'
   });
 
