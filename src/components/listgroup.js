@@ -144,19 +144,16 @@ function ListGroup() {
             <Alert
               variant="warning"
               style={{
-                width: "27rem",
+                width: "20rem",
                 background: "#ffffe0",
-                marginLeft: "0px",
                 marginTop: "10px",
               }}
             >
-              <Alert.Heading>
-                ⚠️ Please <a href="/login">login</a> to save your changes.
-              </Alert.Heading>
+              ⚠️ Please <a href="/login">login</a> to save your changes.
             </Alert>
           )}
         </div>
-        <div style={{ marginTop: "20px" }}>
+        <div style={{ marginTop: "10px" }}>
           <StatusCounter data={data} statusMap={statusMap} />
         </div>
         <Form.Group>
